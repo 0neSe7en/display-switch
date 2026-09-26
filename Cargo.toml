@@ -38,3 +38,7 @@ uinput = "0.1"
 winapi = { version = "0.3", features = ["winuser", "libloaderapi", "wincon"] }
 ddc-winapi = "0.2"
 nvapi = "0.1"
+
+# ddc-hi also depends on ddc-macos; override both copies until mirror-safe enumeration is released.
+[patch.crates-io]
+ddc-macos = { git = "https://github.com/haimgel/ddc-macos-rs", rev = "8100ce412f02e1d22e78b424aec0fde9fa127dc1" }

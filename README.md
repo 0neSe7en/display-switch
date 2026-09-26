@@ -95,6 +95,41 @@ Notes:
 3. If the application path contains spaces, surround the full file path with single quotes.
 4. On Windows, escape the backslashes (replace \ with \\, see the example above).
 
+### macOS display layouts
+
+This fork pins `ddc-macos` to a revision that detects mirrored displays. Build the binary and CoreGraphics
+layout helper from this checkout; the Homebrew release uses the older enumerator:
+
+```sh
+cargo build --release --locked
+mkdir -p "$HOME/.local/bin"
+install -m 755 target/release/display_switch "$HOME/.local/bin/display_switch"
+swiftc -O macos/display-layout.swift -o "$HOME/.local/bin/display-layout"
+"$HOME/.local/bin/display-layout" status
+```
+
+`status` prints each online display's decimal `vendor:model:serial` ID. Copy the IDs into your
+`~/Library/Preferences/display-switch.ini` file, along with your USB device and monitor inputs:
+
+```ini
+usb_device = "VID:PID"
+on_usb_connect_execute = "/absolute/path/display-layout desk MAIN_ID OTHER_ID"
+on_usb_disconnect_execute = "/absolute/path/display-layout away DELAY_SECONDS MAIN_ID OTHER_ID"
+
+[monitor1]
+monitor_id = "MONITOR_NAME"
+on_usb_connect = "Hdmi1"
+
+[monitor2]
+monitor_id = "OTHER_MONITOR_NAME"
+on_usb_connect = "DisplayPort1"
+```
+
+`away` waits the configured number of seconds, makes the built-in display main, then mirrors the listed online
+displays to it. `desk` stops mirroring the listed displays and makes the first one main. It waits up to two seconds
+for all listed displays to become active. Add more IDs to either command as needed. The Mac runs `desk` before DDC
+input switching; it runs `away` on USB departure. Global commands run even when DDC finds no displays.
+
 ### USB Device IDs
 
 #### Windows

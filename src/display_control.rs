@@ -110,10 +110,16 @@ pub fn log_current_source() {
 }
 
 pub fn switch(config: &Configuration, switch_direction: SwitchDirection) {
+    let command_before_switch = cfg!(target_os = "macos") && matches!(switch_direction, SwitchDirection::Connect);
+    if command_before_switch {
+        if let Some(command) = config.default_input_sources.execute_command(switch_direction) {
+            run_command(command);
+        }
+    }
+
     let displays = displays();
     if displays.is_empty() {
         error!("Did not detect any DDC-compatible displays!");
-        return;
     }
     let unique_names = are_display_names_unique(&displays);
     for (index, mut display) in displays.into_iter().enumerate() {
@@ -132,8 +138,10 @@ pub fn switch(config: &Configuration, switch_direction: SwitchDirection) {
             run_command(execute_command)
         }
     }
-    if let Some(execute_command) = config.default_input_sources.execute_command(switch_direction) {
-        run_command(execute_command)
+    if !command_before_switch {
+        if let Some(command) = config.default_input_sources.execute_command(switch_direction) {
+            run_command(command);
+        }
     }
 }
 

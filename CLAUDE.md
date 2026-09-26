@@ -14,6 +14,7 @@ This is a Rust application that converts a simple USB switch into a KVM (Keyboar
 - **`app.rs`** - Main application logic implementing `UsbCallback` trait for USB events
 - **`configuration.rs`** - INI file configuration parsing with per-monitor support using serde
 - **`display_control.rs`** - DDC/CI monitor control using `ddc-hi` crate
+- **`macos/display-layout.swift`** - Optional CoreGraphics layout tool; display IDs and handoff delay are CLI arguments
 - **`usb.rs`** - USB device monitoring abstraction
 - **`input_source.rs`** - Monitor input source definitions (HDMI, DisplayPort, etc.)
 - **`platform/`** - Platform-specific implementations:
@@ -25,10 +26,10 @@ This is a Rust application that converts a simple USB switch into a KVM (Keyboar
 
 1. App loads configuration from platform-specific INI file location
 2. Starts USB device monitoring using platform-specific PnP detection
-3. On USB connect/disconnect events matching configured device ID:
-   - Enumerates DDC-compatible displays
-   - Switches each display to configured input source
-   - Optionally executes configured external commands
+3. On USB connect/disconnect events matching the configured device ID:
+   - On macOS USB connect, runs the global command before enumerating DDC displays and switching inputs
+   - On other events, switches per-monitor inputs before running the global command
+   - Runs global commands even when DDC enumeration finds no displays
 
 ### Platform Support
 

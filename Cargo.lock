@@ -360,8 +360,7 @@ dependencies = [
 [[package]]
 name = "ddc-macos"
 version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28aca22e30b33daf41a5d269a19b00588adf5242ed5525d3818195de17a534dc"
+source = "git+https://github.com/haimgel/ddc-macos-rs?rev=8100ce412f02e1d22e78b424aec0fde9fa127dc1#8100ce412f02e1d22e78b424aec0fde9fa127dc1"
 dependencies = [
  "core-foundation",
  "core-foundation-sys",
